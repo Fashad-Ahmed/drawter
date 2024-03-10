@@ -1,9 +1,5 @@
-import Menu from "@/components/Menu";
+import Canvas from "./canvas";
 
 export default function Home() {
-  return (
-    <>
-      <Menu />
-    </>
-  );
+  return <Canvas />;
 }
