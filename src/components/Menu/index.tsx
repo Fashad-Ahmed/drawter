@@ -1,3 +1,6 @@
+import React, { memo, useMemo } from "react";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEraser,
   faFileArrowDown,
@@ -5,29 +8,33 @@ import {
   faRotateLeft,
   faRotateRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./index.module.css";
 
+const ICON_ITEMS = [
+  { icon: faPencil, label: "Edit" },
+  { icon: faEraser, label: "Erase" },
+  { icon: faRotateLeft, label: "Rotate Left" },
+  { icon: faRotateRight, label: "Rotate Right" },
+  { icon: faFileArrowDown, label: "Download" },
+];
+
 const Menu = () => {
+  const icons = useMemo(() => ICON_ITEMS, []);
+
   return (
-    <div className={styles.menuContainer}>
-      <div className={styles.iconWrapper}>
-        <FontAwesomeIcon icon={faPencil} className={styles.icon} />
-      </div>
-      <div className={styles.iconWrapper}>
-        <FontAwesomeIcon icon={faEraser} className={styles.icon} />
-      </div>
-      <div className={styles.iconWrapper}>
-        <FontAwesomeIcon icon={faRotateLeft} className={styles.icon} />
-      </div>
-      <div className={styles.iconWrapper}>
-        <FontAwesomeIcon icon={faRotateRight} className={styles.icon} />
-      </div>
-      <div className={styles.iconWrapper}>
-        <FontAwesomeIcon icon={faFileArrowDown} className={styles.icon} />
-      </div>
+    <div className={styles.menuContainer} aria-label="Menu">
+      {icons.map(({ icon, label }) => (
+        <button
+          key={label}
+          className={styles.iconWrapper}
+          aria-label={label}
+          type="button"
+        >
+          <FontAwesomeIcon icon={icon} className={styles.icon} />
+        </button>
+      ))}
     </div>
   );
 };
 
-export default Menu;
+export default memo(Menu);
