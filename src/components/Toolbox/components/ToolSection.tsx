@@ -2,6 +2,7 @@ import { memo } from "react";
 
 import styles from "../index.module.css";
 
+// eslint-disable-next-line react/display-name
 export const ToolSection = memo(
   ({ title, children }: { title: string; children: React.ReactNode }) => (
     <div className={styles.toolItem}>

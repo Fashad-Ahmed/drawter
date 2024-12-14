@@ -1,5 +1,6 @@
-import { COLORS, MENU_ITEMS } from "@/utils/enums";
 import create from "zustand";
+
+import { COLORS, MENU_ITEMS } from "@/utils/enums";
 
 interface ToolboxState {
   [MENU_ITEMS.PENCIL]: {
@@ -37,3 +38,9 @@ export const useToolboxStore = create<ToolboxState & ToolboxActions>((set) => ({
   changeBrushSize: (item: string | number, size: any) =>
     set((state: any) => (state[item].size = size)),
 }));
+
+export const useChangeColor = (activeMenuItem: string) =>
+  useToolboxStore((state) => state.changeColor[activeMenuItem]);
+
+export const useChangeBrushSize = (activeMenuItem: string) =>
+  useToolboxStore((state) => state.changeBrushSize[activeMenuItem]);

@@ -1,5 +1,6 @@
-import { MENU_ITEMS } from "@/utils/enums";
 import create from "zustand";
+
+import { MENU_ITEMS } from "@/utils/enums";
 
 interface MenuState {
   activeMenuItem: string;
@@ -17,3 +18,9 @@ export const useMenuStore = create<MenuState & MenuActions>((set) => ({
   menuItemClick: (menuItem) => set({ activeMenuItem: menuItem }),
   actionItemClick: (actionItem) => set({ actionMenuItem: actionItem }),
 }));
+
+export const useActiveMenuItem = () =>
+  useMenuStore((state) => state.activeMenuItem);
+
+export const useActionMenuItem = () =>
+  useMenuStore((state) => state.actionMenuItem);
