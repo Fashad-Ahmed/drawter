@@ -1,6 +1,11 @@
 import React, { memo, useCallback } from "react";
 
-import { COLORS } from "@/utils/enums";
+import { useActiveMenuItem } from "@/store/menuStore";
+import { useToolboxStore } from "@/store/toolBoxStore";
+
+import { COLORS, MENU_ITEMS } from "@/utils/enums";
+import { BrushTool } from "@/utils/types/toolBox.type";
+
 import { ToolSection } from "./components/ToolSection";
 import { ColorBox } from "./components/ColorBox";
 
@@ -16,40 +21,66 @@ const colorOptions = [
 ];
 
 const Toolbox = () => {
-  const handleColorClick = useCallback((color: string) => {
-    console.log(`Color selected: ${color}`);
-  }, []);
+  const activeMenuItem = useActiveMenuItem();
+  const { color, size: brushSize } = useToolboxStore((state) => {
+    const item = state[activeMenuItem] as BrushTool;
+    return item;
+  });
+  const changeBrushSize = useToolboxStore((state) => state.changeBrushSize);
+  const changeColor = useToolboxStore((state) => state.changeColor);
+
+  const showStrokeToolOption = activeMenuItem === MENU_ITEMS.PENCIL;
+  const showBrushToolOption =
+    activeMenuItem === MENU_ITEMS.PENCIL ||
+    activeMenuItem === MENU_ITEMS.ERASER;
+
+  const handleColorClick = useCallback(
+    (color: string) => {
+      console.log(`Color selected: ${color}`);
+      changeColor(activeMenuItem, color);
+    },
+    [activeMenuItem, changeColor]
+  );
 
   const handleBrushSizeChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      console.log(`Brush size: ${event.target.value}`);
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      console.log(`Brush size: ${e.target.value}`);
+      changeBrushSize(activeMenuItem, Number(e.target.value));
     },
-    []
+    [activeMenuItem, changeBrushSize]
   );
 
   return (
     <div className={styles.toolboxContainer}>
-      <ToolSection title="Stroke Color">
-        <div className={styles.itemContainer}>
-          {colorOptions.map((color) => (
-            <ColorBox key={color} color={color} onClick={handleColorClick} />
-          ))}
-        </div>
-      </ToolSection>
+      {showStrokeToolOption && (
+        <ToolSection title="Stroke Color">
+          <div className={styles.itemContainer}>
+            {colorOptions.map((item) => (
+              <ColorBox
+                key={item}
+                color={item}
+                isActiveColor={item === color}
+                onClick={handleColorClick}
+              />
+            ))}
+          </div>
+        </ToolSection>
+      )}
 
-      <ToolSection title="Brush Size">
-        <div className={styles.itemContainer}>
-          <input
-            type="range"
-            min={1}
-            max={10}
-            step={1}
-            defaultValue={5}
-            onChange={handleBrushSizeChange}
-            className={styles.slider}
-          />
-        </div>
-      </ToolSection>
+      {showBrushToolOption && (
+        <ToolSection title="Brush Size">
+          <div className={styles.itemContainer}>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              step={1}
+              onChange={handleBrushSizeChange}
+              value={brushSize}
+            />
+          </div>
+        </ToolSection>
+      )}
     </div>
   );
 };
