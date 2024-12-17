@@ -1,18 +1,11 @@
-import create from "zustand";
+import { create } from "zustand";
 
 import { MENU_ITEMS } from "@/utils/enums";
+import { MenuActions, MenuState } from "@/utils/types/menu.type";
 
-interface MenuState {
-  activeMenuItem: string;
-  actionMenuItem: string | null;
-}
+type MenuStore = MenuState & MenuActions;
 
-interface MenuActions {
-  menuItemClick: (menuItem: string) => void;
-  actionItemClick: (actionItem: string | null) => void;
-}
-
-export const useMenuStore = create<MenuState & MenuActions>((set) => ({
+export const useMenuStore = create<MenuStore>((set) => ({
   activeMenuItem: MENU_ITEMS.PENCIL,
   actionMenuItem: null,
   menuItemClick: (menuItem) => set({ activeMenuItem: menuItem }),
