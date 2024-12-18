@@ -1,95 +1,77 @@
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEraser,
-  faFileArrowDown,
-  faPencil,
-  faRotateLeft,
-  faRotateRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import cx from "classnames";
 
 import { useActiveMenuItem, useMenuStore } from "@/store/menuStore";
-
-import styles from "./index.module.css";
 import { MENU_ITEMS } from "@/utils/enums";
 
-const ICON_ITEMS = [
-  { icon: faPencil, label: "Edit" },
-  { icon: faEraser, label: "Erase" },
-  { icon: faRotateLeft, label: "Rotate Left" },
-  { icon: faRotateRight, label: "Rotate Right" },
-  { icon: faFileArrowDown, label: "Download" },
-];
+import styles from "./index.module.css";
 
 const Menu = () => {
   const activeMenuItem = useActiveMenuItem();
-  const actionItemClick = useMenuStore((state) => state.actionItemClick);
-  const menuItemClick = useMenuStore((state) => state.menuItemClick);
+  const { menuItemClick, actionItemClick } = useMenuStore((state) => ({
+    menuItemClick: state.menuItemClick,
+    actionItemClick: state.actionItemClick,
+  }));
 
-  const icons = useMemo(() => ICON_ITEMS, []);
-
-  const handleMenuClick = (itemName: string) => {
-    menuItemClick(itemName);
+  const handleClick = (item: (typeof ICON_ITEMS)[number]) => {
+    item.isAction
+      ? actionItemClick(item.menuItem)
+      : menuItemClick(item.menuItem);
   };
-
-  const handleActioItemClick = (itemName: string | null) => {
-    actionItemClick(itemName);
-  };
-  //  cluttered code need refactoring
 
   return (
     <div className={styles.menuContainer}>
-      <div
-        className={cx(styles.iconWrapper, {
-          [styles.active]: activeMenuItem === MENU_ITEMS.PENCIL,
-        })}
-        onClick={() => handleMenuClick(MENU_ITEMS.PENCIL)}
-      >
-        <FontAwesomeIcon icon={faPencil} className={styles.icon} />
-      </div>
-      <div
-        className={cx(styles.iconWrapper, {
-          [styles.active]: activeMenuItem === MENU_ITEMS.ERASER,
-        })}
-        onClick={() => handleMenuClick(MENU_ITEMS.ERASER)}
-      >
-        <FontAwesomeIcon icon={faEraser} className={styles.icon} />
-      </div>
-      <div
-        className={styles.iconWrapper}
-        onClick={() => handleActioItemClick(MENU_ITEMS.UNDO)}
-      >
-        <FontAwesomeIcon icon={faRotateLeft} className={styles.icon} />
-      </div>
-      <div
-        className={styles.iconWrapper}
-        onClick={() => handleActioItemClick(MENU_ITEMS.REDO)}
-      >
-        <FontAwesomeIcon icon={faRotateRight} className={styles.icon} />
-      </div>
-      <div
-        className={styles.iconWrapper}
-        onClick={() => handleActioItemClick(MENU_ITEMS.DOWNLOAD)}
-      >
-        <FontAwesomeIcon icon={faFileArrowDown} className={styles.icon} />
-      </div>
+      {ICON_ITEMS.map((item) => (
+        <div
+          key={item.label}
+          className={cx(styles.iconWrapper, {
+            [styles.active]: !item.isAction && activeMenuItem === item.menuItem,
+          })}
+          onClick={() => handleClick(item)}
+        >
+          <FontAwesomeIcon
+            icon={item.icon as IconProp}
+            className={styles.icon}
+          />
+        </div>
+      ))}
     </div>
   );
 };
 
-// return (
-//   <div className={styles.menuContainer} aria-label="Menu">
-//     {icons.map(({ icon, label }) => (
-//       <button
-//         key={label}
-//         className={styles.iconWrapper}
-//         aria-label={label}
-//         type="button"
-//       >
-//         <FontAwesomeIcon icon={icon} className={styles.icon} />
-//       </button>
-//     ))}
-//   </div>
-// );
+const ICON_ITEMS = [
+  {
+    icon: "faPencil",
+    label: "Edit",
+    menuItem: MENU_ITEMS.PENCIL,
+    isAction: false,
+  },
+  {
+    icon: "faEraser",
+    label: "Erase",
+    menuItem: MENU_ITEMS.ERASER,
+    isAction: false,
+  },
+  {
+    icon: "faRotateLeft",
+    label: "Undo",
+    menuItem: MENU_ITEMS.UNDO,
+    isAction: true,
+  },
+  {
+    icon: "faRotateRight",
+    label: "Redo",
+    menuItem: MENU_ITEMS.REDO,
+    isAction: true,
+  },
+  {
+    icon: "faFileArrowDown",
+    label: "Download",
+    menuItem: MENU_ITEMS.DOWNLOAD,
+    isAction: true,
+  },
+];
+
 export default memo(Menu);
